@@ -1,29 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
-var map = require('array-map');
-var indexOf = require('indexof');
-var isArray = require('isarray');
-var forEach = require('foreach');
-var reduce = require('array-reduce');
-var getObjectKeys = require('object-keys');
-var JSON = require('json3');
-
-/**
- * Make sure `Object.keys` work for `undefined`
- * values that are still there, like `document.all`.
- * http://lists.w3.org/Archives/Public/public-html/2009Jun/0546.html
- *
- * @api private
- */
-
-function objectKeys(val){
-  if (Object.keys) return Object.keys(val);
-  return getObjectKeys(val);
-}
-
 /**
  * Module exports.
  */
@@ -162,7 +136,7 @@ function objectToString(o) {
 function arrayToHash(array) {
   var hash = {};
 
-  forEach(array, function(val, idx) {
+  array.forEach(function(val, idx) {
     hash[val] = true;
   });
 
@@ -179,7 +153,7 @@ function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
       output.push('');
     }
   }
-  forEach(keys, function(key) {
+  keys.forEach(function(key) {
     if (!key.match(/^\d+$/)) {
       output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
           key, true));
@@ -216,7 +190,7 @@ function formatValue(ctx, value, recurseTimes) {
   }
 
   // Look up the keys of the object.
-  var keys = objectKeys(value);
+  var keys = Object.keys(value);
   var visibleKeys = arrayToHash(keys);
 
   try {
@@ -230,7 +204,7 @@ function formatValue(ctx, value, recurseTimes) {
   // IE doesn't make error fields non-enumerable
   // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
   if (isError(value)
-      && (indexOf(keys, 'message') >= 0 || indexOf(keys, 'description') >= 0)) {
+      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
     return formatError(value);
   }
 
@@ -254,7 +228,7 @@ function formatValue(ctx, value, recurseTimes) {
   var base = '', array = false, braces = ['{', '}'];
 
   // Make Array say that they are Array
-  if (isArray(value)) {
+  if (Array.isArray(value)) {
     array = true;
     braces = ['[', ']'];
   }
@@ -298,7 +272,7 @@ function formatValue(ctx, value, recurseTimes) {
   if (array) {
     output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
   } else {
-    output = map(keys, function(key) {
+    output = keys.map(function(key) {
       return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
     });
   }
@@ -342,7 +316,7 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
     name = '[' + key + ']';
   }
   if (!str) {
-    if (indexOf(ctx.seen, desc.value) < 0) {
+    if (ctx.seen.indexOf(desc.value) < 0) {
       if (isNull(recurseTimes)) {
         str = formatValue(ctx, desc.value, null);
       } else {
@@ -350,11 +324,11 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
       }
       if (str.indexOf('\n') > -1) {
         if (array) {
-          str = map(str.split('\n'), function(line) {
+          str = str.split('\n').map(function(line) {
             return '  ' + line;
           }).join('\n').substr(2);
         } else {
-          str = '\n' + map(str.split('\n'), function(line) {
+          str = '\n' + str.split('\n').map(function(line) {
             return '   ' + line;
           }).join('\n');
         }
@@ -402,7 +376,7 @@ function formatPrimitive(ctx, value) {
 
 function reduceToSingleString(output, base, braces) {
   var numLinesEst = 0;
-  var length = reduce(output, function(prev, cur) {
+  var length = output.reduce(function(prev, cur) {
     numLinesEst++;
     if (cur.indexOf('\n') >= 0) numLinesEst++;
     return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
@@ -424,7 +398,7 @@ function _extend(origin, add) {
   // Don't do anything if add isn't an object
   if (!add || !isObject(add)) return origin;
 
-  var keys = objectKeys(add);
+  var keys = Object.keys(add);
   var i = keys.length;
   while (i--) {
     origin[keys[i]] = add[keys[i]];

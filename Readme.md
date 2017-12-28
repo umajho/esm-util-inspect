@@ -1,18 +1,23 @@
 
-# util-inspect
+# browser-util-inspect
+
+This module contains minor modifications to the 
+[original by Automattic](https://github.com/Automattic/util-inspect). It
+disregards legacy platform support and has zero dependencies, making it much
+lower weight.
 
 This is an extraction of Node's `inspect` utility from the `util`
 module, with two fundamental advantages:
 
 - Single, focused module
-- Compatible with all browsers and environments.
+- Ready for use in-browser
 
 ## How to use
 
-With browserify or node:
+With some kind of module bundler (webpack, etc):
 
 ```js
-var inspect = require('util-inspect');
+import inspect from 'browser-util-inspect';
 console.log(inspect({}));
 ```
 

@@ -1,4 +1,12 @@
 
+0.1.9 / 2017-12-28
+==================
+
+ * remove old browser support
+ * remove all dependencies
+
+### Automattic changes
+
 0.1.8 / 2014-02-14
 ==================
 
